@@ -1,10 +1,10 @@
 package com.stayEase.stayEase.Hotels.HotelController;
 
-import com.stayEase.stayEase.Hotels.HotelController.HotelDto.HotelRequestDTO;
-import com.stayEase.stayEase.Hotels.HotelController.HotelDto.HotelResponseDto;
-import com.stayEase.stayEase.Hotels.HotelController.HotelService.HotelService;
-import com.stayEase.stayEase.Hotels.HotelController.HotelDto.HotelUpdateReqDto;
-import com.stayEase.stayEase.Hotels.HotelController.HotelDto.HotelUpdateResponseDto;
+import com.stayEase.stayEase.Hotels.HotelDto.HotelRequestDTO;
+import com.stayEase.stayEase.Hotels.HotelDto.HotelResponseDto;
+import com.stayEase.stayEase.Hotels.HotelService.HotelService;
+import com.stayEase.stayEase.Hotels.HotelDto.HotelUpdateReqDto;
+import com.stayEase.stayEase.Hotels.HotelDto.HotelUpdateResponseDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

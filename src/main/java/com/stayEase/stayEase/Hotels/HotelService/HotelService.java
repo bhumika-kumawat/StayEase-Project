@@ -1,11 +1,11 @@
-package com.stayEase.stayEase.Hotels.HotelController.HotelService;
+package com.stayEase.stayEase.Hotels.HotelService;
 
-import com.stayEase.stayEase.Hotels.HotelController.HotelEntity.HotelEntity;
-import com.stayEase.stayEase.Hotels.HotelController.HotelRepo.HotelRepo;
-import com.stayEase.stayEase.Hotels.HotelController.HotelDto.HotelRequestDTO;
-import com.stayEase.stayEase.Hotels.HotelController.HotelDto.HotelResponseDto;
-import com.stayEase.stayEase.Hotels.HotelController.HotelDto.HotelUpdateReqDto;
-import com.stayEase.stayEase.Hotels.HotelController.HotelDto.HotelUpdateResponseDto;
+import com.stayEase.stayEase.Hotels.HotelEntity.HotelEntity;
+import com.stayEase.stayEase.Hotels.HotelRepo.HotelRepo;
+import com.stayEase.stayEase.Hotels.HotelDto.HotelRequestDTO;
+import com.stayEase.stayEase.Hotels.HotelDto.HotelResponseDto;
+import com.stayEase.stayEase.Hotels.HotelDto.HotelUpdateReqDto;
+import com.stayEase.stayEase.Hotels.HotelDto.HotelUpdateResponseDto;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

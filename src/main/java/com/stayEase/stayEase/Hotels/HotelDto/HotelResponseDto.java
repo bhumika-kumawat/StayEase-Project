@@ -1,4 +1,4 @@
-package com.stayEase.stayEase.Hotels.HotelController.HotelDto;
+package com.stayEase.stayEase.Hotels.HotelDto;
 
 import lombok.Getter;
 import lombok.Setter;

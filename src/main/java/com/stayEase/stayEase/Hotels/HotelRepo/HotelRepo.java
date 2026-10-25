@@ -1,6 +1,6 @@
-package com.stayEase.stayEase.Hotels.HotelController.HotelRepo;
+package com.stayEase.stayEase.Hotels.HotelRepo;
 
-import com.stayEase.stayEase.Hotels.HotelController.HotelEntity.HotelEntity;
+import com.stayEase.stayEase.Hotels.HotelEntity.HotelEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
