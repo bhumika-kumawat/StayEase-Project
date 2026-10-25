@@ -1,18 +1,20 @@
-package com.stayEase.stayEase.UpdateReqDto;
+package com.stayEase.stayEase.Hotels.HotelController.HotelDto;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.math.BigDecimal;
 
-@Setter
 @Getter
-public class UpdateReqDto {
+@Setter
 
+public class HotelRequestDTO {
+
+    String HotelName;
     String HotelAddress;
     int HotelPhone;
+    String HotelEmail;
     String HotelDescription;
+    String HotelCity;
     BigDecimal HotelPrice;
-
 }

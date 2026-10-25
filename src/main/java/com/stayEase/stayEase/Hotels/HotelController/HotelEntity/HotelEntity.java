@@ -1,4 +1,4 @@
-package com.stayEase.stayEase.HotelEntity;
+package com.stayEase.stayEase.Hotels.HotelController.HotelEntity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

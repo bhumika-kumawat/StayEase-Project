@@ -1,11 +1,11 @@
-package com.stayEase.stayEase.HotelService;
+package com.stayEase.stayEase.Hotels.HotelController.HotelService;
 
-import com.stayEase.stayEase.HotelEntity.HotelEntity;
-import com.stayEase.stayEase.HotelRepo.HotelRepo;
-import com.stayEase.stayEase.HotelRequestDto.HotelRequestDTO;
-import com.stayEase.stayEase.HotelResponseDto.HotelResponseDto;
-import com.stayEase.stayEase.UpdateReqDto.UpdateReqDto;
-import com.stayEase.stayEase.UpdateResponseDto.UpdateResponseDto;
+import com.stayEase.stayEase.Hotels.HotelController.HotelEntity.HotelEntity;
+import com.stayEase.stayEase.Hotels.HotelController.HotelRepo.HotelRepo;
+import com.stayEase.stayEase.Hotels.HotelController.HotelDto.HotelRequestDTO;
+import com.stayEase.stayEase.Hotels.HotelController.HotelDto.HotelResponseDto;
+import com.stayEase.stayEase.Hotels.HotelController.HotelDto.HotelUpdateReqDto;
+import com.stayEase.stayEase.Hotels.HotelController.HotelDto.HotelUpdateResponseDto;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -64,7 +64,7 @@ public class HotelService {
 
 //    update
 
-    public UpdateResponseDto update(UpdateReqDto updateReqHotel , Long id)
+    public HotelUpdateResponseDto update(HotelUpdateReqDto updateReqHotel , Long id)
     {
 
         Optional<HotelEntity> existingRecord = hotelRepo.findById(id);
@@ -127,15 +127,15 @@ public class HotelService {
         return hotelResponseDto;
     }
 
-    private UpdateResponseDto mapToUpdateDto (HotelEntity hotelEntity)
+    private HotelUpdateResponseDto mapToUpdateDto (HotelEntity hotelEntity)
     {
-        UpdateResponseDto updateResponseDto = new UpdateResponseDto();
-        updateResponseDto.setHotelAddress(hotelEntity.getHotelAddress());
-        updateResponseDto.setHotelDescription(hotelEntity.getHotelDescription());
-        updateResponseDto.setHotelPhone(hotelEntity.getHotelPhone());
-        updateResponseDto.setHotelPrice(hotelEntity.getHotelPrice());
+        HotelUpdateResponseDto hotelUpdateResponseDto = new HotelUpdateResponseDto();
+        hotelUpdateResponseDto.setHotelAddress(hotelEntity.getHotelAddress());
+        hotelUpdateResponseDto.setHotelDescription(hotelEntity.getHotelDescription());
+        hotelUpdateResponseDto.setHotelPhone(hotelEntity.getHotelPhone());
+        hotelUpdateResponseDto.setHotelPrice(hotelEntity.getHotelPrice());
 
-        return updateResponseDto;
+        return hotelUpdateResponseDto;
 
     }
 }

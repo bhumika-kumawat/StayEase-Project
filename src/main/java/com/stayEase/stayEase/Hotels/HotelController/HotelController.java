@@ -1,10 +1,10 @@
-package com.stayEase.stayEase.HotelController;
+package com.stayEase.stayEase.Hotels.HotelController;
 
-import com.stayEase.stayEase.HotelRequestDto.HotelRequestDTO;
-import com.stayEase.stayEase.HotelResponseDto.HotelResponseDto;
-import com.stayEase.stayEase.HotelService.HotelService;
-import com.stayEase.stayEase.UpdateReqDto.UpdateReqDto;
-import com.stayEase.stayEase.UpdateResponseDto.UpdateResponseDto;
+import com.stayEase.stayEase.Hotels.HotelController.HotelDto.HotelRequestDTO;
+import com.stayEase.stayEase.Hotels.HotelController.HotelDto.HotelResponseDto;
+import com.stayEase.stayEase.Hotels.HotelController.HotelService.HotelService;
+import com.stayEase.stayEase.Hotels.HotelController.HotelDto.HotelUpdateReqDto;
+import com.stayEase.stayEase.Hotels.HotelController.HotelDto.HotelUpdateResponseDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,8 +50,8 @@ public class HotelController {
     // update Hotel
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<UpdateResponseDto> updateHotel(@RequestBody UpdateReqDto updateReqDto, @PathVariable Long id) {
-        UpdateResponseDto updatedRecord = hotelService.update(updateReqDto, id);
+    public ResponseEntity<HotelUpdateResponseDto> updateHotel(@RequestBody HotelUpdateReqDto hotelUpdateReqDto, @PathVariable Long id) {
+        HotelUpdateResponseDto updatedRecord = hotelService.update(hotelUpdateReqDto, id);
         return ResponseEntity.ok(updatedRecord);
     }
 

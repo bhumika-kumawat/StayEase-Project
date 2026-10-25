@@ -1,4 +1,4 @@
-package com.stayEase.stayEase.HotelRequestDto;
+package com.stayEase.stayEase.Hotels.HotelController.HotelDto;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,8 +7,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-
-public class HotelRequestDTO {
+public class HotelUpdateResponseDto {
 
     String HotelName;
     String HotelAddress;
@@ -17,4 +16,5 @@ public class HotelRequestDTO {
     String HotelDescription;
     String HotelCity;
     BigDecimal HotelPrice;
+
 }
