@@ -2,10 +2,10 @@ package com.stayEase.stayEase.Hotels.HotelService;
 
 import com.stayEase.stayEase.Hotels.HotelEntity.HotelEntity;
 import com.stayEase.stayEase.Hotels.HotelRepo.HotelRepo;
-import com.stayEase.stayEase.Hotels.HotelDto.HotelRequestDTO;
-import com.stayEase.stayEase.Hotels.HotelDto.HotelResponseDto;
-import com.stayEase.stayEase.Hotels.HotelDto.HotelUpdateReqDto;
-import com.stayEase.stayEase.Hotels.HotelDto.HotelUpdateResponseDto;
+import com.stayEase.stayEase.Hotels.HotelDtos.HotelRequestDTO;
+import com.stayEase.stayEase.Hotels.HotelDtos.HotelResponseDto;
+import com.stayEase.stayEase.Hotels.HotelDtos.HotelUpdateReqDto;
+import com.stayEase.stayEase.Hotels.HotelDtos.HotelUpdateResponseDto;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

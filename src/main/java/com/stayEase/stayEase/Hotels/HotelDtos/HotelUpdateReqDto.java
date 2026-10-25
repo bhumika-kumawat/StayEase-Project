@@ -1,20 +1,17 @@
-package com.stayEase.stayEase.Hotels.HotelDto;
+package com.stayEase.stayEase.Hotels.HotelDtos;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 
-@Getter
 @Setter
+@Getter
+public class HotelUpdateReqDto {
 
-public class HotelRequestDTO {
-
-    String HotelName;
     String HotelAddress;
     int HotelPhone;
-    String HotelEmail;
     String HotelDescription;
-    String HotelCity;
     BigDecimal HotelPrice;
+
 }
