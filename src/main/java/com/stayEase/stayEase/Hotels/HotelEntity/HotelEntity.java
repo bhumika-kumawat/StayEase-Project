@@ -1,13 +1,13 @@
 package com.stayEase.stayEase.Hotels.HotelEntity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.stayEase.stayEase.Rooms.RoomEntity.RoomEntity;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -27,5 +27,8 @@ public class HotelEntity {
     int HotelRating;
     String HotelCity;
     BigDecimal HotelPrice;
+
+    @OneToMany(mappedBy = "hotel")
+    List <RoomEntity> roomEntity = new ArrayList<>();
 
 }

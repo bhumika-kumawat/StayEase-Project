@@ -1,23 +1,31 @@
 package com.stayEase.stayEase.Rooms.RoomEntity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import com.stayEase.stayEase.Hotels.HotelEntity.HotelEntity;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.math.BigDecimal;
 
 @Entity
 @Getter
 @Setter
 public class RoomEntity {
 
+    @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     int room_id;
 
     String roomName;
     String roomType;
-    Double pricePerNight;
-    String availableStatus;
+    BigDecimal pricePerNight;
+    int capacity;
+    String description;
+
+    @ManyToOne
+    @JoinColumn(name = "hotel_id")
+
+    HotelEntity hotel;
 
 
 }

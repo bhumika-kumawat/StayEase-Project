@@ -103,6 +103,7 @@ public class HotelService {
 
 
         HotelEntity Hotel = new HotelEntity();
+
         Hotel.setHotelAddress(hotelRequestDTO.getHotelAddress());
         Hotel.setHotelCity(hotelRequestDTO.getHotelCity());
         Hotel.setHotelDescription(hotelRequestDTO.getHotelDescription());
@@ -123,6 +124,9 @@ public class HotelService {
         hotelResponseDto.setHotelName(hotelEntity.getHotelName());
         hotelResponseDto.setHotelPhone(hotelEntity.getHotelPhone());
         hotelResponseDto.setHotelPrice(hotelEntity.getHotelPrice());
+        hotelResponseDto.setHotelEmail(hotelEntity.getHotelEmail()); // ADDED
+        hotelResponseDto.setHotelCity(hotelEntity.getHotelCity());   // ADDED
+
 
         return hotelResponseDto;
     }
