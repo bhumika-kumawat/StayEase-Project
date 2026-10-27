@@ -7,11 +7,11 @@ import java.math.BigDecimal;
 @Setter
 public class RoomUpdateResponseDTO {
 
-    String roomName;
-    String roomType;
-    BigDecimal pricePerNight;
-    int capacity;
-    String description;
+    private String roomName;
+    private String roomType;
+    private BigDecimal pricePerNight;
+    private int capacity;
+    private String description;
 
 
 }

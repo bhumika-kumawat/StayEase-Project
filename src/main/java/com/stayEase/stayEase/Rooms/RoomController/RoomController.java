@@ -5,6 +5,7 @@ import com.stayEase.stayEase.Rooms.RoomDtos.RoomResponseDTO;
 import com.stayEase.stayEase.Rooms.RoomDtos.RoomUpdateRequestDTO;
 import com.stayEase.stayEase.Rooms.RoomDtos.RoomUpdateResponseDTO;
 import com.stayEase.stayEase.Rooms.RoomService.RoomService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,16 +24,16 @@ public class RoomController {
 
 
 //    create
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<RoomResponseDTO>createRoom(
-            @RequestBody RoomRequestDTO roomRequestDTO , @RequestParam Long Hotel_id)
+            @Valid @RequestBody RoomRequestDTO roomRequestDTO , @RequestParam Long Hotel_id)
     {
         RoomResponseDTO roomResponseDTO = roomService.create(roomRequestDTO , Hotel_id);
         return ResponseEntity.ok(roomResponseDTO);
     }
 
 //    get room by id
-    @GetMapping("/getRoom/{room_id}")
+    @GetMapping("/{room_id}")
     public ResponseEntity<RoomResponseDTO>getRoomById(@PathVariable Long room_id)
     {
         RoomResponseDTO getRoom = roomService.getRoomById(room_id);
@@ -50,8 +51,8 @@ public class RoomController {
     }
 
 //    update rooms by room_id
-    @PutMapping("/update/{room_id}")
-    public ResponseEntity<RoomUpdateResponseDTO>updateRoom(@RequestBody RoomUpdateRequestDTO roomUpdateRequestDTO
+    @PutMapping("/{room_id}")
+    public ResponseEntity<RoomUpdateResponseDTO>updateRoom(@Valid @RequestBody RoomUpdateRequestDTO roomUpdateRequestDTO
             , @PathVariable Long room_id )
     {
         RoomUpdateResponseDTO updatedRoomRecord = roomService.updateRoomById(roomUpdateRequestDTO , room_id);
@@ -59,8 +60,8 @@ public class RoomController {
     }
 
 //    delete room records by room_id
-    @DeleteMapping("/delete")
-    public ResponseEntity <Void> deleteRoomRecord(@RequestParam Long room_id)
+    @DeleteMapping
+    public ResponseEntity <Void> deleteRoomRecord(@Valid @RequestParam Long room_id)
     {
         roomService.deleteRoomById(room_id);
         return ResponseEntity.noContent().build();

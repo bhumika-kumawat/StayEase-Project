@@ -1,5 +1,6 @@
 package com.stayEase.stayEase.Rooms.RoomService;
 
+import com.stayEase.stayEase.CustomExceptions.ResourceNotFoundException;
 import com.stayEase.stayEase.Hotels.HotelEntity.HotelEntity;
 import com.stayEase.stayEase.Hotels.HotelRepo.HotelRepo;
 import com.stayEase.stayEase.Rooms.RoomDtos.RoomRequestDTO;
@@ -42,8 +43,7 @@ public class RoomService {
     public RoomResponseDTO getRoomById(Long room_id)
     {
         RoomEntity existingRoom = roomRepo.findById(room_id).orElseThrow(
-                () -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
+                () -> new ResourceNotFoundException(
                         "For this room_id room is not present" + room_id
                 ));
         return mapToRoomDTO(existingRoom);
@@ -64,8 +64,7 @@ public class RoomService {
     public RoomUpdateResponseDTO updateRoomById (RoomUpdateRequestDTO roomUpdateRequestDTO,Long room_id)
     {
         RoomEntity existingRoom = roomRepo.findById(room_id).orElseThrow(
-                () -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
+                () -> new ResourceNotFoundException(
                         "Invalid update id " + room_id
                 ));
 
@@ -84,8 +83,7 @@ public class RoomService {
 
     public void deleteRoomById(Long id) {
         if (!roomRepo.existsById(id)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
+            throw new ResourceNotFoundException(
                     "Hotel not found with ID: " + id
             );
         }

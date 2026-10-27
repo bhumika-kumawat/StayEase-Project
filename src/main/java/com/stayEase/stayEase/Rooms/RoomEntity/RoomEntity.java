@@ -16,13 +16,13 @@ public class RoomEntity {
 
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
-    int room_id;
+    private int room_id;
 
-    String roomName;
-    String roomType;
-    BigDecimal pricePerNight;
-    int capacity;
-    String description;
+    private String roomName;
+    private String roomType;
+    private BigDecimal pricePerNight;
+    private int capacity;
+    private String description;
 
     @ManyToOne
     @JoinColumn(name = "hotel_id")
