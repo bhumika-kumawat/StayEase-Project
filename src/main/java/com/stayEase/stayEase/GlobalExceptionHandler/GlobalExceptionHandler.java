@@ -1,5 +1,6 @@
 package com.stayEase.stayEase.GlobalExceptionHandler;
 
+import com.stayEase.stayEase.CustomExceptions.DuplicateResourceFoundException;
 import com.stayEase.stayEase.CustomExceptions.ResourceNotFoundException;
 import com.stayEase.stayEase.ExceptionDTOs.ErrorResponseDto;
 import com.stayEase.stayEase.ExceptionDTOs.ValidationErrorResponseDto;
@@ -76,5 +77,22 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(errorResponse);
 
+    }
+
+    //    Duplicate resource found exception
+    @ExceptionHandler(DuplicateResourceFoundException.class)
+    public ResponseEntity<ErrorResponseDto> DuplicateResourceFoundException(DuplicateResourceFoundException e, HttpServletRequest request) {
+        {
+            ErrorResponseDto errorResponse = new ErrorResponseDto(
+                    LocalDateTime.now(),
+                    HttpStatus.CONFLICT.value(),
+                    HttpStatus.CONFLICT.getReasonPhrase(),
+                    e.getMessage(),
+                    request.getRequestURI()
+            );
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(errorResponse);
+        }
     }
 }

@@ -4,6 +4,7 @@ import com.stayEase.stayEase.BookingManagement.Enum.BookingStaus;
 import com.stayEase.stayEase.Rooms.RoomEntity.RoomEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 
@@ -15,18 +16,18 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-
+@NoArgsConstructor
 
 public class BookingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long bookingId;
+    private Long bookingId;
 
-    LocalDateTime checkInTime;
-    LocalDateTime checkOutTime;
-    BigDecimal totalPrice;
-    BookingStaus bookingStatus;
+    private LocalDateTime checkInTime;
+    private LocalDateTime checkOutTime;
+    private BigDecimal totalPrice;
+    private BookingStaus bookingStatus;
 
      @ManyToOne
      @JoinColumn (name = "room_id")

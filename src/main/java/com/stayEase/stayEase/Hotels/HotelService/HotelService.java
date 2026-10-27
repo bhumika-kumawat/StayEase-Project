@@ -1,5 +1,6 @@
 package com.stayEase.stayEase.Hotels.HotelService;
 
+import com.stayEase.stayEase.CustomExceptions.DuplicateResourceFoundException;
 import com.stayEase.stayEase.CustomExceptions.ResourceNotFoundException;
 import com.stayEase.stayEase.GlobalExceptionHandler.GlobalExceptionHandler;
 import com.stayEase.stayEase.Hotels.HotelEntity.HotelEntity;
@@ -25,6 +26,16 @@ public class HotelService {
 
 //    create
     public HotelResponseDto createHotel(HotelRequestDTO hotelRequestDTO) {
+
+        boolean emailExists = hotelRepo.existsByHotelEmail(hotelRequestDTO.getHotelEmail());
+
+        if (emailExists) {
+            throw new DuplicateResourceFoundException(
+                    "Hotel with email "
+                            + hotelRequestDTO.getHotelEmail()
+                            + " already exists"
+            );
+        }
 
         HotelEntity createdHotel = mapToEntity(hotelRequestDTO);
         HotelEntity HotelResponse = hotelRepo.save(createdHotel);

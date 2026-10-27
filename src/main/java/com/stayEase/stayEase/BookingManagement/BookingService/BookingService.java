@@ -59,13 +59,13 @@ public class BookingService {
     public BookingResponseDTO updateBooking(
             Long bookingId, BookingRequestDTO bookingRequestDTO) {
 
-        // Find the existing booking or throw an exception if it does not exist
-        BookingEntity bookingEntity = bookingRepo.findById(bookingId)
-                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
-
         // Find the room selected for the updated booking
         RoomEntity roomEntity = roomRepo.findById(bookingRequestDTO.getRoomId())
                 .orElseThrow(() -> new ResourceNotFoundException("Room not found"));
+
+        // Find the existing booking or throw an exception if it does not exist
+        BookingEntity bookingEntity = bookingRepo.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
         // Update the booking's check-in and check-out times
         bookingEntity.setCheckInTime(bookingRequestDTO.getCheckInTime());
@@ -96,15 +96,14 @@ public class BookingService {
 
     BookingEntity bookingEntity = new BookingEntity();
 
+    RoomEntity roomEntity = roomRepo.findById(room_id)
+            .orElseThrow(() -> new ResourceNotFoundException("Room not found"));
+
     bookingEntity.setBookingStatus(bookingRequestDTO.getBookingStatus());
     bookingEntity.setCheckInTime(bookingRequestDTO.getCheckInTime());
     bookingEntity.setCheckOutTime(bookingRequestDTO.getCheckOutTime());
 
-    RoomEntity roomEntity = roomRepo.findById(room_id)
-            .orElseThrow(() -> new ResourceNotFoundException("Room not found"));
-
     bookingEntity.setRoomEntity(roomEntity);
-
     return bookingEntity;
 }
 //    method to convert entity into a DTO
