@@ -21,7 +21,7 @@ public class BookingController {
     }
 
      // create booking
-    @PostMapping ("/create")
+    @PostMapping
     public ResponseEntity<BookingResponseDTO>createBooking(@RequestBody BookingRequestDTO bookingRequestDTO ,
     @RequestParam Long room_id)
     {
@@ -31,7 +31,7 @@ public class BookingController {
     }
 
     // Get a booking by ID
-    @GetMapping("get/{bookingId}")
+    @GetMapping("/{bookingId}")
     public ResponseEntity<BookingResponseDTO> getBookingById(
             @PathVariable Long bookingId) {
 

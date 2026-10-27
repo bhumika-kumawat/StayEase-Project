@@ -4,6 +4,7 @@ import com.stayEase.stayEase.BookingManagement.BookingDTOS.BookingRequestDTO;
 import com.stayEase.stayEase.BookingManagement.BookingDTOS.BookingResponseDTO;
 import com.stayEase.stayEase.BookingManagement.BookingEntity.BookingEntity;
 import com.stayEase.stayEase.BookingManagement.BookingRepo.BookingRepo;
+import com.stayEase.stayEase.CustomExceptions.ResourceNotFoundException;
 import com.stayEase.stayEase.Rooms.RoomEntity.RoomEntity;
 import com.stayEase.stayEase.Rooms.RoomRepo.RoomRepo;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class BookingService {
 
         // Find the booking in the database or throw an exception if not found
         BookingEntity bookingEntity = bookingRepo.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
         // Convert the booking entity into a response DTO
         return mapToBookingDto(bookingEntity);
@@ -60,11 +61,11 @@ public class BookingService {
 
         // Find the existing booking or throw an exception if it does not exist
         BookingEntity bookingEntity = bookingRepo.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
         // Find the room selected for the updated booking
         RoomEntity roomEntity = roomRepo.findById(bookingRequestDTO.getRoomId())
-                .orElseThrow(() -> new RuntimeException("Room not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Room not found"));
 
         // Update the booking's check-in and check-out times
         bookingEntity.setCheckInTime(bookingRequestDTO.getCheckInTime());
@@ -82,7 +83,7 @@ public class BookingService {
 
         // Find the booking or throw an exception if it does not exist
         BookingEntity bookingEntity = bookingRepo.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
         // Delete the booking from the database
         bookingRepo.delete(bookingEntity);
@@ -100,7 +101,7 @@ public class BookingService {
     bookingEntity.setCheckOutTime(bookingRequestDTO.getCheckOutTime());
 
     RoomEntity roomEntity = roomRepo.findById(room_id)
-            .orElseThrow(() -> new RuntimeException("Room not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Room not found"));
 
     bookingEntity.setRoomEntity(roomEntity);
 
