@@ -11,7 +11,7 @@ public class HotelUpdateResponseDto {
 
     String HotelName;
     String HotelAddress;
-    int HotelPhone;
+    String HotelPhone;
     String HotelEmail;
     String HotelDescription;
     String HotelCity;

@@ -9,11 +9,11 @@ import java.math.BigDecimal;
 @Setter
 public class HotelResponseDto {
 
-        String HotelName;
-        String HotelAddress;
-        int HotelPhone;
-        String HotelEmail;
-        String HotelDescription;
-        String HotelCity;
-        BigDecimal HotelPrice;
+        private String HotelName;
+        private String HotelAddress;
+        private String HotelPhone;
+        private String HotelEmail;
+        private String HotelDescription;
+        private String HotelCity;
+        private BigDecimal HotelPrice;
 }

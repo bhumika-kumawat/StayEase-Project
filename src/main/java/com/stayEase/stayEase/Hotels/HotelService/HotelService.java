@@ -1,5 +1,7 @@
 package com.stayEase.stayEase.Hotels.HotelService;
 
+import com.stayEase.stayEase.CustomExceptions.ResourceNotFoundException;
+import com.stayEase.stayEase.GlobalExceptionHandler.GlobalExceptionHandler;
 import com.stayEase.stayEase.Hotels.HotelEntity.HotelEntity;
 import com.stayEase.stayEase.Hotels.HotelRepo.HotelRepo;
 import com.stayEase.stayEase.Hotels.HotelDtos.HotelRequestDTO;
@@ -31,19 +33,15 @@ public class HotelService {
     }
 
 //    get hotel by Id
+    public HotelResponseDto getHotel(Long id) {
+        HotelEntity hotel = hotelRepo.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Hotel with id " + id + " not found"
+                        )
+                );
 
-    public HotelResponseDto getHotel(Long id)
-    {
-       Optional<HotelEntity> existHotel =  hotelRepo.findById(id);
-
-       if(existHotel.isEmpty())
-       {
-           return null;
-       }
-
-       HotelEntity existingHotel = existHotel.get();
-       return mapToDto(existingHotel);
-
+        return mapToDto(hotel);
     }
 
     //    get all hotel records
@@ -67,16 +65,11 @@ public class HotelService {
     public HotelUpdateResponseDto update(HotelUpdateReqDto updateReqHotel , Long id)
     {
 
-        Optional<HotelEntity> existingRecord = hotelRepo.findById(id);
+        HotelEntity existingHotel = hotelRepo.findById(id)
+                        .orElseThrow(
+                                () -> new ResourceNotFoundException("Invalid id , can't update")
+                        );
 
-        if(existingRecord.isEmpty())
-        {
-            return null;
-
-        }
-
-
-        HotelEntity existingHotel= existingRecord.get();
         existingHotel.setHotelAddress(updateReqHotel.getHotelAddress());
         existingHotel.setHotelDescription(updateReqHotel.getHotelDescription());
         existingHotel.setHotelPhone(updateReqHotel.getHotelPhone());
@@ -86,16 +79,15 @@ public class HotelService {
         return mapToUpdateDto(savedHotel);
     }
 
-
 //    delete
 
-    public boolean deleteHotel(Long id) {
-        if (!hotelRepo.existsById(id)) {
-            return false;
-        }
+    public void deleteHotel(Long id) {
 
-        hotelRepo.deleteById(id);
-        return true;
+        HotelEntity hotel = hotelRepo.findById(id).
+                orElseThrow(
+                        () -> new ResourceNotFoundException("invalid id , can't delete")
+                );
+        hotelRepo.delete(hotel);
     }
 
 
@@ -115,6 +107,7 @@ public class HotelService {
         return Hotel;
     }
 
+
     private HotelResponseDto mapToDto(HotelEntity hotelEntity)
     {
         HotelResponseDto hotelResponseDto = new HotelResponseDto();
@@ -130,6 +123,7 @@ public class HotelService {
 
         return hotelResponseDto;
     }
+
 
     private HotelUpdateResponseDto mapToUpdateDto (HotelEntity hotelEntity)
     {

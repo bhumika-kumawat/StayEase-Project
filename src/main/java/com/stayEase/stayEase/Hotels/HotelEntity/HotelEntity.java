@@ -2,6 +2,7 @@ package com.stayEase.stayEase.Hotels.HotelEntity;
 
 import com.stayEase.stayEase.Rooms.RoomEntity.RoomEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,19 +15,25 @@ import java.util.List;
 @Setter
 public class HotelEntity {
 
-    String HotelName;
-
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
-    Long HotelId;
+    private Long hotelId;
 
-    String HotelAddress;
-    int HotelPhone;
-    String HotelEmail;
-    String HotelDescription;
-    int HotelRating;
-    String HotelCity;
-    BigDecimal HotelPrice;
+    private String hotelName;
+
+    private String hotelAddress;
+
+    private String hotelPhone;
+
+    private String hotelEmail;
+
+    private String hotelDescription;
+
+    private int hotelRating;
+
+    private String hotelCity;
+
+    private BigDecimal hotelPrice;
 
     @OneToMany(mappedBy = "hotel")
     List <RoomEntity> roomEntity = new ArrayList<>();
