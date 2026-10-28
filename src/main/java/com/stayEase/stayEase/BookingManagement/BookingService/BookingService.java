@@ -4,9 +4,12 @@ import com.stayEase.stayEase.BookingManagement.BookingDTOS.BookingRequestDTO;
 import com.stayEase.stayEase.BookingManagement.BookingDTOS.BookingResponseDTO;
 import com.stayEase.stayEase.BookingManagement.BookingEntity.BookingEntity;
 import com.stayEase.stayEase.BookingManagement.BookingRepo.BookingRepo;
+import com.stayEase.stayEase.BookingManagement.Enum.BookingStaus;
+import com.stayEase.stayEase.CustomExceptions.DuplicateResourceFoundException;
 import com.stayEase.stayEase.CustomExceptions.ResourceNotFoundException;
 import com.stayEase.stayEase.Rooms.RoomEntity.RoomEntity;
 import com.stayEase.stayEase.Rooms.RoomRepo.RoomRepo;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,11 +27,55 @@ public class BookingService {
 
 //    create method for booking
 
-    public BookingResponseDTO createBooking(BookingRequestDTO bookingRequestDTO , Long room_id) {
-        BookingEntity bookingEntity = mapToBookingEntity(bookingRequestDTO , room_id);
-        bookingRepo.save(bookingEntity);
-        return mapToBookingDto(bookingEntity);
+    public BookingResponseDTO createBooking(
+            BookingRequestDTO bookingRequestDTO,
+            Long roomId) {
 
+        // 1. Validate booking dates
+        if (!bookingRequestDTO.getCheckOutDate()
+                .isAfter(bookingRequestDTO.getCheckInDate())) {
+            throw new IllegalArgumentException(
+                    "Check-out date must be after check-in date."
+            );
+        }
+
+        // 2. Find the room using the provided room ID
+        RoomEntity room = roomRepo.findById(roomId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Room not found with ID: " + roomId
+                        )
+                );
+
+        // 3. Check whether the room has an overlapping booking
+        boolean overlappingBooking =
+                bookingRepo
+                        .existsByRoomEntity_RoomIdAndCheckInDateLessThanAndCheckOutDateGreaterThan(
+                                room.getRoomId(),
+                                bookingRequestDTO.getCheckOutDate(),
+                                bookingRequestDTO.getCheckInDate()
+                        );
+
+        // 4. Reject the request if the dates overlap
+        if (overlappingBooking) {
+            throw new IllegalArgumentException(
+                    "Room is already booked for the selected dates."
+            );
+        }
+
+        // 5. Convert the request DTO into an entity
+        BookingEntity bookingEntity =
+                mapToBookingEntity(bookingRequestDTO);
+
+        // 6. Associate the booking with the selected room
+        bookingEntity.setRoomEntity(room);
+
+        // 7. Save the booking
+        BookingEntity savedBooking =
+                bookingRepo.save(bookingEntity);
+
+        // 8. Convert the saved entity into a response DTO
+        return mapToBookingDto(savedBooking);
     }
 
 
@@ -92,18 +139,16 @@ public class BookingService {
     //method to convert dto into entity
     
     public BookingEntity mapToBookingEntity(
-        BookingRequestDTO bookingRequestDTO, Long room_id) {
+        BookingRequestDTO bookingRequestDTO) {
 
     BookingEntity bookingEntity = new BookingEntity();
 
-    RoomEntity roomEntity = roomRepo.findById(room_id)
-            .orElseThrow(() -> new ResourceNotFoundException("Room not found"));
-
-    bookingEntity.setBookingStatus(bookingRequestDTO.getBookingStatus());
+    bookingEntity.setBookingStatus(BookingStaus.PENDING);
+    bookingEntity.setCheckInDate(bookingRequestDTO.getCheckInDate());
+    bookingEntity.setCheckOutDate(bookingRequestDTO.getCheckOutDate());
     bookingEntity.setCheckInTime(bookingRequestDTO.getCheckInTime());
     bookingEntity.setCheckOutTime(bookingRequestDTO.getCheckOutTime());
 
-    bookingEntity.setRoomEntity(roomEntity);
     return bookingEntity;
 }
 //    method to convert entity into a DTO
@@ -115,8 +160,11 @@ public class BookingService {
         bookingResponseDTO.setBookingStatus(bookingEntity.getBookingStatus());
         bookingResponseDTO.setCheckInTime(bookingEntity.getCheckInTime());
         bookingResponseDTO.setCheckOutTime(bookingEntity.getCheckOutTime());
-        bookingResponseDTO.setMessage("your booking successfully completed ");
+        bookingResponseDTO.setCheckInDate(bookingEntity.getCheckInDate());
+        bookingResponseDTO.setCheckOutDate(bookingEntity.getCheckOutDate());
+        bookingResponseDTO.setBookingId(bookingEntity.getBookingId());
 
+        bookingResponseDTO.setMessage("your booking successfully completed ");
         return bookingResponseDTO;
     }
 }

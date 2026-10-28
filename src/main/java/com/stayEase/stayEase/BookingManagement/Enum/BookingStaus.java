@@ -6,6 +6,5 @@ public enum BookingStaus {
     PENDING,
     CONFIRMED,
     CANCELED,
-    COMPLETED,
     REFUNDED,
 }

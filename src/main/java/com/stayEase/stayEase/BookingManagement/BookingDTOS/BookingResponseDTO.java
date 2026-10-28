@@ -5,15 +5,21 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 @Setter
 public class BookingResponseDTO {
 
-    LocalDateTime checkInTime;
-    LocalDateTime checkOutTime;
+    LocalDate checkInDate;
+    LocalDate checkOutDate;
+    LocalTime checkInTime;
+    LocalTime checkOutTime;
     BigDecimal totalPrice;
     BookingStaus bookingStatus;
     String message;
+    private Long bookingId;
+
 }

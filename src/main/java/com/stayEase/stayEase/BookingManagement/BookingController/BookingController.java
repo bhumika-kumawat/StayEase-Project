@@ -3,6 +3,7 @@ package com.stayEase.stayEase.BookingManagement.BookingController;
 import com.stayEase.stayEase.BookingManagement.BookingDTOS.BookingRequestDTO;
 import com.stayEase.stayEase.BookingManagement.BookingDTOS.BookingResponseDTO;
 import com.stayEase.stayEase.BookingManagement.BookingService.BookingService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,10 +23,9 @@ public class BookingController {
 
      // create booking
     @PostMapping
-    public ResponseEntity<BookingResponseDTO>createBooking(@RequestBody BookingRequestDTO bookingRequestDTO ,
-    @RequestParam Long room_id)
+    public ResponseEntity<BookingResponseDTO>createBooking(@Valid @RequestBody BookingRequestDTO bookingRequestDTO , Long roomId)
     {
-        BookingResponseDTO createdBooking = bookingService.createBooking(bookingRequestDTO , room_id);
+        BookingResponseDTO createdBooking = bookingService.createBooking(bookingRequestDTO , bookingRequestDTO.getRoomId());
         return ResponseEntity.ok(createdBooking);
 
     }
@@ -60,7 +60,7 @@ public class BookingController {
 
     // Delete a booking by ID
     @DeleteMapping("/{bookingId}")
-    public ResponseEntity<Void> deleteBooking(@PathVariable Long bookingId) {
+    public ResponseEntity<Void> deleteBooking(@Valid  @PathVariable Long bookingId) {
 
         // Delete the requested booking through the service
         bookingService.deleteBooking(bookingId);
