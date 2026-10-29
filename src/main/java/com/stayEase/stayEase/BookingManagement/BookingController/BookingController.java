@@ -23,9 +23,9 @@ public class BookingController {
 
      // create booking
     @PostMapping
-    public ResponseEntity<BookingResponseDTO>createBooking(@Valid @RequestBody BookingRequestDTO bookingRequestDTO , Long roomId)
+    public ResponseEntity<BookingResponseDTO>createBooking(@Valid @RequestBody BookingRequestDTO bookingRequestDTO)
     {
-        BookingResponseDTO createdBooking = bookingService.createBooking(bookingRequestDTO , bookingRequestDTO.getRoomId());
+        BookingResponseDTO createdBooking = bookingService.createBooking(bookingRequestDTO);
         return ResponseEntity.ok(createdBooking);
 
     }

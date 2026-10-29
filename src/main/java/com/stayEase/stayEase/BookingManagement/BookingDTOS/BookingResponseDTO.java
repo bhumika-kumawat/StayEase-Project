@@ -13,13 +13,15 @@ import java.time.LocalTime;
 @Setter
 public class BookingResponseDTO {
 
-    LocalDate checkInDate;
-    LocalDate checkOutDate;
-    LocalTime checkInTime;
-    LocalTime checkOutTime;
-    BigDecimal totalPrice;
-    BookingStaus bookingStatus;
-    String message;
+    private LocalDate checkInDate;
+    private LocalDate checkOutDate;
+    private LocalTime checkInTime;
+    private LocalTime checkOutTime;
+    private BigDecimal totalPrice;
+    private BookingStaus bookingStatus;
+    private String message;
     private Long bookingId;
+    private Long roomId;
+
 
 }

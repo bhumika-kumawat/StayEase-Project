@@ -1,18 +1,17 @@
 package com.stayEase.stayEase.BookingManagement.BookingService;
-
 import com.stayEase.stayEase.BookingManagement.BookingDTOS.BookingRequestDTO;
 import com.stayEase.stayEase.BookingManagement.BookingDTOS.BookingResponseDTO;
 import com.stayEase.stayEase.BookingManagement.BookingEntity.BookingEntity;
 import com.stayEase.stayEase.BookingManagement.BookingRepo.BookingRepo;
 import com.stayEase.stayEase.BookingManagement.Enum.BookingStaus;
-import com.stayEase.stayEase.CustomExceptions.DuplicateResourceFoundException;
 import com.stayEase.stayEase.CustomExceptions.ResourceNotFoundException;
 import com.stayEase.stayEase.Rooms.RoomEntity.RoomEntity;
 import com.stayEase.stayEase.Rooms.RoomRepo.RoomRepo;
-import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BookingService {
@@ -27,56 +26,75 @@ public class BookingService {
 
 //    create method for booking
 
-    public BookingResponseDTO createBooking(
-            BookingRequestDTO bookingRequestDTO,
-            Long roomId) {
+    public BookingResponseDTO createBooking(BookingRequestDTO bookingRequestDTO) {
 
-        // 1. Validate booking dates
-        if (!bookingRequestDTO.getCheckOutDate()
-                .isAfter(bookingRequestDTO.getCheckInDate())) {
-            throw new IllegalArgumentException(
-                    "Check-out date must be after check-in date."
-            );
-        }
-
-        // 2. Find the room using the provided room ID
-        RoomEntity room = roomRepo.findById(roomId)
+        // 1. Check whether the requested room exists.
+        RoomEntity existingRoom = roomRepo.findById(bookingRequestDTO.getRoomId())
                 .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Room not found with ID: " + roomId
-                        )
-                );
+                        new ResourceNotFoundException("Room ID is invalid"));
 
-        // 3. Check whether the room has an overlapping booking
-        boolean overlappingBooking =
-                bookingRepo
-                        .existsByRoomEntity_RoomIdAndCheckInDateLessThanAndCheckOutDateGreaterThan(
-                                room.getRoomId(),
-                                bookingRequestDTO.getCheckOutDate(),
-                                bookingRequestDTO.getCheckInDate()
-                        );
+        // 2. Combine dates and times to validate the complete booking period.
+        LocalDateTime requestedStart = LocalDateTime.of(
+                bookingRequestDTO.getCheckInDate(),
+                bookingRequestDTO.getCheckInTime()
+        );
 
-        // 4. Reject the request if the dates overlap
-        if (overlappingBooking) {
+        LocalDateTime requestedEnd = LocalDateTime.of(
+                bookingRequestDTO.getCheckOutDate(),
+                bookingRequestDTO.getCheckOutTime()
+        );
+
+        // 3. Checkout must be after check-in.
+        if (!requestedEnd.isAfter(requestedStart)) {
             throw new IllegalArgumentException(
-                    "Room is already booked for the selected dates."
+                    "Checkout date and time must be after check-in date and time."
             );
         }
 
-        // 5. Convert the request DTO into an entity
-        BookingEntity bookingEntity =
-                mapToBookingEntity(bookingRequestDTO);
+        // 4. Check whether the requested dates overlap an existing booking.
+        boolean dateOverlap = bookingRepo.existsDateOverlap(
+                bookingRequestDTO.getRoomId(),
+                bookingRequestDTO.getCheckInDate(),
+                bookingRequestDTO.getCheckOutDate()
+        );
 
-        // 6. Associate the booking with the selected room
-        bookingEntity.setRoomEntity(room);
+        if (dateOverlap) {
+            throw new IllegalArgumentException(
+                    "The room is already booked for the requested dates. "
+                            + "Please choose different dates."
+            );
+        }
 
-        // 7. Save the booking
-        BookingEntity savedBooking =
-                bookingRepo.save(bookingEntity);
+        // 5. If the dates are available, check whether the requested
+        // time conflicts with an existing booking on those dates.
+        boolean timeOverlap = bookingRepo.existsTimeOverlap(
+                bookingRequestDTO.getRoomId(),
+                bookingRequestDTO.getCheckInDate(),
+                bookingRequestDTO.getCheckInDate(),
+                bookingRequestDTO.getCheckInTime(),
+                bookingRequestDTO.getCheckOutTime()
+        );
 
-        // 8. Convert the saved entity into a response DTO
+        if (timeOverlap) {
+            throw new IllegalArgumentException(
+                    "The room is unavailable for the requested time. "
+                            + "Please choose a different check-in or check-out time."
+            );
+        }
+
+        // 6. Map the request to an entity and associate the selected room.
+        BookingEntity bookingEntity = mapToBookingEntity(bookingRequestDTO);
+        bookingEntity.setRoomEntity(existingRoom);
+
+        // 7. Save only after all validations pass.
+        BookingEntity savedBooking = bookingRepo.save(bookingEntity);
+
+        // 8. Return the saved booking as a response DTO.
         return mapToBookingDto(savedBooking);
     }
+
+
+
 
 
     // Get a booking by its ID
@@ -137,7 +155,7 @@ public class BookingService {
     }
 
     //method to convert dto into entity
-    
+
     public BookingEntity mapToBookingEntity(
         BookingRequestDTO bookingRequestDTO) {
 
@@ -148,6 +166,7 @@ public class BookingService {
     bookingEntity.setCheckOutDate(bookingRequestDTO.getCheckOutDate());
     bookingEntity.setCheckInTime(bookingRequestDTO.getCheckInTime());
     bookingEntity.setCheckOutTime(bookingRequestDTO.getCheckOutTime());
+
 
     return bookingEntity;
 }
@@ -163,6 +182,7 @@ public class BookingService {
         bookingResponseDTO.setCheckInDate(bookingEntity.getCheckInDate());
         bookingResponseDTO.setCheckOutDate(bookingEntity.getCheckOutDate());
         bookingResponseDTO.setBookingId(bookingEntity.getBookingId());
+        bookingResponseDTO.setRoomId(bookingEntity.getRoomEntity().getRoomId());
 
         bookingResponseDTO.setMessage("your booking successfully completed ");
         return bookingResponseDTO;
