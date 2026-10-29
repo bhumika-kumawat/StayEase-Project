@@ -8,10 +8,9 @@ import com.stayEase.stayEase.CustomExceptions.ResourceNotFoundException;
 import com.stayEase.stayEase.Rooms.RoomEntity.RoomEntity;
 import com.stayEase.stayEase.Rooms.RoomRepo.RoomRepo;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 public class BookingService {
@@ -93,10 +92,6 @@ public class BookingService {
         return mapToBookingDto(savedBooking);
     }
 
-
-
-
-
     // Get a booking by its ID
     public BookingResponseDTO getBookingById(Long bookingId) {
 
@@ -133,11 +128,31 @@ public class BookingService {
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
         // Update the booking's check-in and check-out times
+
+        LocalDateTime checkIn = LocalDateTime.of(
+                bookingRequestDTO.getCheckInDate(),
+                bookingRequestDTO.getCheckInTime()
+        );
+
+        LocalDateTime checkOut = LocalDateTime.of(
+                bookingRequestDTO.getCheckOutDate(),
+                bookingRequestDTO.getCheckOutTime()
+        );
+
+        if (!checkOut.isAfter(checkIn)) {
+            throw new IllegalArgumentException(
+                    "Checkout must be after check-in"
+            );
+        }
+
+        bookingEntity.setCheckInDate(bookingRequestDTO.getCheckInDate());
         bookingEntity.setCheckInTime(bookingRequestDTO.getCheckInTime());
+
+        bookingEntity.setCheckOutDate(bookingRequestDTO.getCheckOutDate());
         bookingEntity.setCheckOutTime(bookingRequestDTO.getCheckOutTime());
 
-        // Associate the booking with the selected room
-        bookingEntity.setRoomEntity(roomEntity);
+         // Associate the booking with the selected room
+       bookingEntity.setRoomEntity(roomEntity);
 
         // Save the updated booking and return its response DTO
         return mapToBookingDto(bookingRepo.save(bookingEntity));
