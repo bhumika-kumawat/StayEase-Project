@@ -1,15 +1,21 @@
 package com.stayEase.stayEase.BookingManagement.BookingService;
 import com.stayEase.stayEase.BookingManagement.BookingDTOS.BookingRequestDTO;
 import com.stayEase.stayEase.BookingManagement.BookingDTOS.BookingResponseDTO;
+import com.stayEase.stayEase.BookingManagement.BookingDTOS.BookingStatusRequestDTO;
 import com.stayEase.stayEase.BookingManagement.BookingEntity.BookingEntity;
 import com.stayEase.stayEase.BookingManagement.BookingRepo.BookingRepo;
-import com.stayEase.stayEase.BookingManagement.Enum.BookingStaus;
+import com.stayEase.stayEase.BookingManagement.Enum.BookingStatus;
 import com.stayEase.stayEase.CustomExceptions.ResourceNotFoundException;
 import com.stayEase.stayEase.Rooms.RoomEntity.RoomEntity;
 import com.stayEase.stayEase.Rooms.RoomRepo.RoomRepo;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 
 @Service
@@ -59,7 +65,7 @@ public class BookingService {
 
         if (dateOverlap) {
             throw new IllegalArgumentException(
-                    "The room is already booked for the requested dates. "
+                    "The room is already booked for the requested dates."
                             + "Please choose different dates."
             );
         }
@@ -81,9 +87,18 @@ public class BookingService {
             );
         }
 
+//        calculating total price for booking
+
+        BigDecimal priceForRoom = existingRoom.getPricePerNight();
+        long totalNights = DAYS.between(bookingRequestDTO.getCheckInDate() ,bookingRequestDTO.getCheckOutDate());
+        BigDecimal totalPrice = priceForRoom.multiply(BigDecimal.valueOf(totalNights));
+
+
         // 6. Map the request to an entity and associate the selected room.
         BookingEntity bookingEntity = mapToBookingEntity(bookingRequestDTO);
+        bookingEntity.setBookingStatus(BookingStatus.PENDING);
         bookingEntity.setRoomEntity(existingRoom);
+        bookingEntity.setTotalPrice(totalPrice);
 
         // 7. Save only after all validations pass.
         BookingEntity savedBooking = bookingRepo.save(bookingEntity);
@@ -145,6 +160,12 @@ public class BookingService {
             );
         }
 
+    //     logic to update the total price in entity
+
+        BigDecimal roomPrice = roomEntity.getPricePerNight();
+        long updatedNights = ChronoUnit.DAYS.between(bookingRequestDTO.getCheckInDate() , bookingRequestDTO.getCheckOutDate());
+        BigDecimal calculateUpdatedNights = roomPrice.multiply(BigDecimal.valueOf(updatedNights));
+        .
         bookingEntity.setCheckInDate(bookingRequestDTO.getCheckInDate());
         bookingEntity.setCheckInTime(bookingRequestDTO.getCheckInTime());
 
@@ -153,10 +174,71 @@ public class BookingService {
 
          // Associate the booking with the selected room
        bookingEntity.setRoomEntity(roomEntity);
+       bookingEntity.setTotalPrice(calculateUpdatedNights);
 
         // Save the updated booking and return its response DTO
         return mapToBookingDto(bookingRepo.save(bookingEntity));
     }
+
+    //   Update Booking Status :  patch update method , update booking status
+    public BookingResponseDTO updateBookingStatus(
+            Long bookingId,
+            BookingStatusRequestDTO bookingStatusRequestDTO) {
+
+        BookingEntity existingBooking = bookingRepo.findById(bookingId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Invalid booking Id")
+                );
+
+        BookingStatus currentStatus = existingBooking.getBookingStatus();
+        BookingStatus newStatus = bookingStatusRequestDTO.getBookingStatus();
+
+        if (currentStatus == BookingStatus.CANCELLED) {
+
+            throw new IllegalArgumentException(
+                    "Cancelled Booking cannot be updated."
+            );
+        }
+
+        else if (currentStatus == BookingStatus.PENDING) {
+
+            if (newStatus != BookingStatus.CONFIRMED &&
+                    newStatus != BookingStatus.CANCELLED) {
+
+                throw new IllegalArgumentException(
+                        "Pending bookings can only be confirmed or cancelled."
+                );
+            }
+        }
+
+        else if (currentStatus == BookingStatus.CONFIRMED) {
+
+            if (newStatus != BookingStatus.CANCELLED &&
+                    newStatus != BookingStatus.COMPLETED) {
+
+                throw new IllegalArgumentException(
+                        "Confirmed bookings can only be cancelled or completed."
+                );
+            }
+        }
+
+        else if (currentStatus == BookingStatus.COMPLETED) {
+
+            throw new IllegalArgumentException(
+                    "Completed bookings cannot be updated."
+            );
+        }
+
+        // Updating booking status after successful validation
+        existingBooking.setBookingStatus(newStatus);
+
+        // Save updated booking
+        bookingRepo.save(existingBooking);
+
+        // Return updated booking response
+        return mapToBookingDto(existingBooking);
+    }
+
 
     // Delete an existing booking using its ID
     public void deleteBooking(Long bookingId) {
@@ -176,7 +258,7 @@ public class BookingService {
 
     BookingEntity bookingEntity = new BookingEntity();
 
-    bookingEntity.setBookingStatus(BookingStaus.PENDING);
+    bookingEntity.setBookingStatus(BookingStatus.PENDING);
     bookingEntity.setCheckInDate(bookingRequestDTO.getCheckInDate());
     bookingEntity.setCheckOutDate(bookingRequestDTO.getCheckOutDate());
     bookingEntity.setCheckInTime(bookingRequestDTO.getCheckInTime());
@@ -198,6 +280,7 @@ public class BookingService {
         bookingResponseDTO.setCheckOutDate(bookingEntity.getCheckOutDate());
         bookingResponseDTO.setBookingId(bookingEntity.getBookingId());
         bookingResponseDTO.setRoomId(bookingEntity.getRoomEntity().getRoomId());
+        bookingResponseDTO.setTotalPrice(bookingEntity.getTotalPrice());
 
         bookingResponseDTO.setMessage("your booking successfully completed ");
         return bookingResponseDTO;

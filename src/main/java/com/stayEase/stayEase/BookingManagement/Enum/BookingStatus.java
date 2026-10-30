@@ -1,10 +1,10 @@
 package com.stayEase.stayEase.BookingManagement.Enum;
 
 
-public enum BookingStaus {
+public enum BookingStatus {
 
     PENDING,
     CONFIRMED,
-    CANCELED,
-    REFUNDED,
+    CANCELLED,
+    COMPLETED,
 }

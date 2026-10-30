@@ -1,18 +1,14 @@
 package com.stayEase.stayEase.BookingManagement.BookingEntity;
-
-import com.stayEase.stayEase.BookingManagement.Enum.BookingStaus;
+import com.stayEase.stayEase.BookingManagement.Enum.BookingStatus;
 import com.stayEase.stayEase.Rooms.RoomEntity.RoomEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
+
 
 @Entity
 @Getter
@@ -30,7 +26,8 @@ public class BookingEntity {
     private LocalTime checkInTime;
     private LocalTime checkOutTime;
     private BigDecimal totalPrice;
-    private BookingStaus bookingStatus;
+    @Enumerated(EnumType.STRING)
+    private BookingStatus bookingStatus;
 
      @ManyToOne
      @JoinColumn (name = "room_id")

@@ -2,6 +2,7 @@ package com.stayEase.stayEase.BookingManagement.BookingController;
 
 import com.stayEase.stayEase.BookingManagement.BookingDTOS.BookingRequestDTO;
 import com.stayEase.stayEase.BookingManagement.BookingDTOS.BookingResponseDTO;
+import com.stayEase.stayEase.BookingManagement.BookingDTOS.BookingStatusRequestDTO;
 import com.stayEase.stayEase.BookingManagement.BookingService.BookingService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -51,7 +52,7 @@ public class BookingController {
     @PutMapping("/{bookingId}")
     public ResponseEntity<BookingResponseDTO> updateBooking(
             @PathVariable Long bookingId,
-            @RequestBody BookingRequestDTO bookingRequestDTO) {
+            @Valid @RequestBody BookingRequestDTO bookingRequestDTO) {
 
         // Pass the booking ID and updated details to the service
         return ResponseEntity.ok(
@@ -67,6 +68,15 @@ public class BookingController {
 
         // Return HTTP 204 No Content after successful deletion
         return ResponseEntity.noContent().build();
+    }
+
+//    patch method
+    @PatchMapping("/{bookingId}/status")
+    public ResponseEntity<BookingResponseDTO>updateBookingStatus(@PathVariable Long bookingId ,@Valid @RequestBody BookingStatusRequestDTO bookingStatusRequestDTO)
+    {
+       BookingResponseDTO bookingStatusUpdated = bookingService.updateBookingStatus(bookingId , bookingStatusRequestDTO);
+       return ResponseEntity.ok(bookingStatusUpdated);
+
     }
 
 }

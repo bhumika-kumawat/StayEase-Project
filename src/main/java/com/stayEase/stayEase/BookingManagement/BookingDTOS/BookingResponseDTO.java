@@ -1,12 +1,11 @@
 package com.stayEase.stayEase.BookingManagement.BookingDTOS;
 
-import com.stayEase.stayEase.BookingManagement.Enum.BookingStaus;
+import com.stayEase.stayEase.BookingManagement.Enum.BookingStatus;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Getter
@@ -18,7 +17,7 @@ public class BookingResponseDTO {
     private LocalTime checkInTime;
     private LocalTime checkOutTime;
     private BigDecimal totalPrice;
-    private BookingStaus bookingStatus;
+    private BookingStatus bookingStatus;
     private String message;
     private Long bookingId;
     private Long roomId;
