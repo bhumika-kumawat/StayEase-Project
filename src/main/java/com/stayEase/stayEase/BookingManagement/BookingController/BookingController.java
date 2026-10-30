@@ -1,10 +1,12 @@
 package com.stayEase.stayEase.BookingManagement.BookingController;
 
+import com.stayEase.stayEase.BookingManagement.BookingDTOS.BookingPageResponseDTO;
 import com.stayEase.stayEase.BookingManagement.BookingDTOS.BookingRequestDTO;
 import com.stayEase.stayEase.BookingManagement.BookingDTOS.BookingResponseDTO;
 import com.stayEase.stayEase.BookingManagement.BookingDTOS.BookingStatusRequestDTO;
 import com.stayEase.stayEase.BookingManagement.BookingService.BookingService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,10 +44,11 @@ public class BookingController {
 
     // Get all bookings
     @GetMapping
-    public ResponseEntity<List<BookingResponseDTO>> getAllBookings() {
+    public ResponseEntity<BookingPageResponseDTO >getAllBookings(
+            @RequestParam int page , int size) {
 
         // Return all bookings with HTTP 200 OK
-        return ResponseEntity.ok(bookingService.getAllBookings());
+        return ResponseEntity.ok(bookingService.getAllBookings(page , size));
     }
 
     // Update an existing booking

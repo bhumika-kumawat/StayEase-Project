@@ -1,13 +1,18 @@
 package com.stayEase.stayEase.BookingManagement.BookingService;
+import com.stayEase.stayEase.BookingManagement.BookingDTOS.BookingPageResponseDTO;
 import com.stayEase.stayEase.BookingManagement.BookingDTOS.BookingRequestDTO;
 import com.stayEase.stayEase.BookingManagement.BookingDTOS.BookingResponseDTO;
 import com.stayEase.stayEase.BookingManagement.BookingDTOS.BookingStatusRequestDTO;
 import com.stayEase.stayEase.BookingManagement.BookingEntity.BookingEntity;
 import com.stayEase.stayEase.BookingManagement.BookingRepo.BookingRepo;
-import com.stayEase.stayEase.BookingManagement.Enum.BookingStatus;
+import com.stayEase.stayEase.BookingManagement.BookingStatusEnum.BookingStatus;
 import com.stayEase.stayEase.CustomExceptions.ResourceNotFoundException;
 import com.stayEase.stayEase.Rooms.RoomEntity.RoomEntity;
 import com.stayEase.stayEase.Rooms.RoomRepo.RoomRepo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -90,7 +95,11 @@ public class BookingService {
 //        calculating total price for booking
 
         BigDecimal priceForRoom = existingRoom.getPricePerNight();
+
+//        calculating total stay
         long totalNights = DAYS.between(bookingRequestDTO.getCheckInDate() ,bookingRequestDTO.getCheckOutDate());
+
+//        calculating total price
         BigDecimal totalPrice = priceForRoom.multiply(BigDecimal.valueOf(totalNights));
 
 
@@ -119,15 +128,26 @@ public class BookingService {
     }
 
     // Get all bookings from the database
-    public List<BookingResponseDTO> getAllBookings() {
+    public BookingPageResponseDTO getAllBookings(int page , int size) {
+
+        //      sorting bookings by price in descending order
+        Sort sortDesc = Sort.by(Sort.Direction.DESC, "totalPrice");
+
+        //    retrieve bookings 1 page 10 records
+        Pageable pageable = PageRequest.of(page,size,sortDesc);
+        Page<BookingEntity> bookings = bookingRepo.findAll(pageable);
+
 
         // Retrieve all booking records
-        return bookingRepo.findAll()
-                .stream()
-
-                // Convert each booking entity into a response DTO
-                .map(this::mapToBookingDto)
-                .toList();
+        return new BookingPageResponseDTO(
+                bookings.map(this::mapToBookingDto).getContent(),
+                bookings.getNumber(),
+                bookings.getSize(),
+                bookings.getTotalElements(),
+                bookings.getTotalPages(),
+                bookings.hasNext(),
+                bookings.hasPrevious()
+        );
     }
 
     // Update an existing booking using its ID
@@ -160,27 +180,33 @@ public class BookingService {
             );
         }
 
-    //     logic to update the total price in entity
+        //     logic to update the total price in entity
 
         BigDecimal roomPrice = roomEntity.getPricePerNight();
+
+       //      calculating price for updated booking (check in check out dates if updated)
+
         long updatedNights = ChronoUnit.DAYS.between(bookingRequestDTO.getCheckInDate() , bookingRequestDTO.getCheckOutDate());
+
+      //       calculating total price
         BigDecimal calculateUpdatedNights = roomPrice.multiply(BigDecimal.valueOf(updatedNights));
-        .
+
+     //      updating values back into  booking entity
         bookingEntity.setCheckInDate(bookingRequestDTO.getCheckInDate());
         bookingEntity.setCheckInTime(bookingRequestDTO.getCheckInTime());
 
         bookingEntity.setCheckOutDate(bookingRequestDTO.getCheckOutDate());
         bookingEntity.setCheckOutTime(bookingRequestDTO.getCheckOutTime());
 
-         // Associate the booking with the selected room
-       bookingEntity.setRoomEntity(roomEntity);
-       bookingEntity.setTotalPrice(calculateUpdatedNights);
+        // Associate the booking with the selected room
+        bookingEntity.setRoomEntity(roomEntity);
+        bookingEntity.setTotalPrice(calculateUpdatedNights);
 
         // Save the updated booking and return its response DTO
         return mapToBookingDto(bookingRepo.save(bookingEntity));
     }
 
-    //   Update Booking Status :  patch update method , update booking status
+    // PATCH  Update Booking Status :  patch update method , update booking status
     public BookingResponseDTO updateBookingStatus(
             Long bookingId,
             BookingStatusRequestDTO bookingStatusRequestDTO) {
@@ -254,19 +280,19 @@ public class BookingService {
     //method to convert dto into entity
 
     public BookingEntity mapToBookingEntity(
-        BookingRequestDTO bookingRequestDTO) {
+            BookingRequestDTO bookingRequestDTO) {
 
-    BookingEntity bookingEntity = new BookingEntity();
+        BookingEntity bookingEntity = new BookingEntity();
 
-    bookingEntity.setBookingStatus(BookingStatus.PENDING);
-    bookingEntity.setCheckInDate(bookingRequestDTO.getCheckInDate());
-    bookingEntity.setCheckOutDate(bookingRequestDTO.getCheckOutDate());
-    bookingEntity.setCheckInTime(bookingRequestDTO.getCheckInTime());
-    bookingEntity.setCheckOutTime(bookingRequestDTO.getCheckOutTime());
+        bookingEntity.setBookingStatus(BookingStatus.PENDING);
+        bookingEntity.setCheckInDate(bookingRequestDTO.getCheckInDate());
+        bookingEntity.setCheckOutDate(bookingRequestDTO.getCheckOutDate());
+        bookingEntity.setCheckInTime(bookingRequestDTO.getCheckInTime());
+        bookingEntity.setCheckOutTime(bookingRequestDTO.getCheckOutTime());
 
 
-    return bookingEntity;
-}
+        return bookingEntity;
+    }
 //    method to convert entity into a DTO
 
     public BookingResponseDTO mapToBookingDto (BookingEntity bookingEntity)

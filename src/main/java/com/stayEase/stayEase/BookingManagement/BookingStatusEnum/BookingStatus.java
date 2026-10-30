@@ -1,4 +1,4 @@
-package com.stayEase.stayEase.BookingManagement.Enum;
+package com.stayEase.stayEase.BookingManagement.BookingStatusEnum;
 
 
 public enum BookingStatus {

@@ -1,5 +1,5 @@
 package com.stayEase.stayEase.BookingManagement.BookingEntity;
-import com.stayEase.stayEase.BookingManagement.Enum.BookingStatus;
+import com.stayEase.stayEase.BookingManagement.BookingStatusEnum.BookingStatus;
 import com.stayEase.stayEase.Rooms.RoomEntity.RoomEntity;
 import jakarta.persistence.*;
 import lombok.Getter;

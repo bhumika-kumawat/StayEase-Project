@@ -1,6 +1,6 @@
 package com.stayEase.stayEase.BookingManagement.BookingDTOS;
 
-import com.stayEase.stayEase.BookingManagement.Enum.BookingStatus;
+import com.stayEase.stayEase.BookingManagement.BookingStatusEnum.BookingStatus;
 import lombok.Getter;
 import lombok.Setter;
 
