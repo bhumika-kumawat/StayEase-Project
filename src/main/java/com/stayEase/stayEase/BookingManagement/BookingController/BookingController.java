@@ -5,11 +5,13 @@ import com.stayEase.stayEase.BookingManagement.BookingDTOS.BookingRequestDTO;
 import com.stayEase.stayEase.BookingManagement.BookingDTOS.BookingResponseDTO;
 import com.stayEase.stayEase.BookingManagement.BookingDTOS.BookingStatusRequestDTO;
 import com.stayEase.stayEase.BookingManagement.BookingService.BookingService;
+import com.stayEase.stayEase.BookingManagement.BookingStatusEnum.BookingStatus;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -41,6 +43,50 @@ public class BookingController {
         // Call the service to retrieve the requested booking
         return ResponseEntity.ok(bookingService.getBookingById(bookingId));
     }
+
+//    get a booking by room id
+    @GetMapping("/room/{roomId}")
+    public ResponseEntity<List <BookingResponseDTO> >getBookingByRoomId(@Valid @PathVariable Long roomId)
+    {
+        return ResponseEntity.ok(bookingService.getBookingsByRoomId(roomId));
+    }
+
+//    get a booking by STATUS
+    @GetMapping("/status")
+    public ResponseEntity<List<BookingResponseDTO>>getBookingByStatus(@Valid @RequestParam BookingStatus bookingStatus)
+    {
+
+        List<BookingResponseDTO> getAllBookingsByStatus =bookingService.getBookingByStatus(bookingStatus);
+        return ResponseEntity.ok(getAllBookingsByStatus);
+    }
+
+    //    get Bookings by check In Date
+
+    @GetMapping("/checkIn")
+    public ResponseEntity<List<BookingResponseDTO>>getBookingByCheckIn(@Valid @RequestParam LocalDate checkInDate)
+    {
+        List<BookingResponseDTO> getAllBookingsByCheckIn =bookingService.getAllBookingByCheckIn(checkInDate);
+        return ResponseEntity.ok(getAllBookingsByCheckIn);
+    }
+
+    //    get Bookings by check Out date
+
+    @GetMapping("/checkOut")
+    public ResponseEntity<List<BookingResponseDTO>>getBookingByCheckOut(@Valid @RequestParam LocalDate checkOutDate)
+    {
+        List<BookingResponseDTO> getAllBookingsByCheckOut =bookingService.getAllBookingByCheckOut(checkOutDate);
+        return ResponseEntity.ok(getAllBookingsByCheckOut);
+    }
+
+   //    get bookings by price range
+
+    @GetMapping("/price")
+    public ResponseEntity<List<BookingResponseDTO>>getBookingByPriceRange(@RequestParam BigDecimal minPrice , @RequestParam BigDecimal  maxPrice)
+    {
+        List<BookingResponseDTO> getBookingsByPriceRange = bookingService.getAllBookingByPriceRange(minPrice , maxPrice);
+        return ResponseEntity.ok(getBookingsByPriceRange);
+    }
+
 
     // Get all bookings
     @GetMapping

@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -96,8 +97,8 @@ public class BookingService {
 
         BigDecimal priceForRoom = existingRoom.getPricePerNight();
 
-//        calculating total stay
-        long totalNights = DAYS.between(bookingRequestDTO.getCheckInDate() ,bookingRequestDTO.getCheckOutDate());
+//        calculating total stay (check in , and check out days calculation)
+        long totalNights = ChronoUnit.DAYS.between(bookingRequestDTO.getCheckInDate() ,bookingRequestDTO.getCheckOutDate());
 
 //        calculating total price
         BigDecimal totalPrice = priceForRoom.multiply(BigDecimal.valueOf(totalNights));
@@ -116,7 +117,7 @@ public class BookingService {
         return mapToBookingDto(savedBooking);
     }
 
-    // Get a booking by its ID
+    // Get a booking by Booking ID
     public BookingResponseDTO getBookingById(Long bookingId) {
 
         // Find the booking in the database or throw an exception if not found
@@ -127,15 +128,92 @@ public class BookingService {
         return mapToBookingDto(bookingEntity);
     }
 
+    //    Get bookings by its roomId
+
+    public List<BookingResponseDTO > getBookingsByRoomId(Long roomId)
+    {
+        RoomEntity existRoomId = roomRepo.findById(roomId).orElseThrow(
+                () -> new ResourceNotFoundException(" room id is invalid")
+        );
+
+        List<BookingEntity> bookings =  bookingRepo.findByRoomEntity_RoomId(roomId);
+
+        return bookings.stream()
+                .map(this::mapToBookingDto )
+                .toList();
+    }
+
+     //    get booking by its Status
+
+    public List<BookingResponseDTO>getBookingByStatus(BookingStatus bookingStatus)
+    {
+        List<BookingEntity> bookingsByStatus = bookingRepo.findByBookingStatus(bookingStatus);
+        return bookingsByStatus.stream()
+                .map(this::mapToBookingDto)
+                .toList();
+    }
+
+//    get booking by check in date
+
+    public List<BookingResponseDTO>getAllBookingByCheckIn(LocalDate checkInDate)
+    {
+        List<BookingEntity> bookingByCheckIn = bookingRepo.findByCheckInDate(checkInDate);
+        return bookingByCheckIn.stream()
+                .map(this::mapToBookingDto)
+                .toList();
+    }
+
+    //    get booking by check Out date
+
+    public List<BookingResponseDTO>getAllBookingByCheckOut(LocalDate checkOutDate)
+    {
+        List<BookingEntity> bookingByCheckOut = bookingRepo.findByCheckOutDate(checkOutDate);
+        return bookingByCheckOut.stream()
+                .map(this::mapToBookingDto)
+                .toList();
+    }
+
+//    get booking by price range minimum to maximum
+
+    public List<BookingResponseDTO>getAllBookingByPriceRange(BigDecimal  minPrice , BigDecimal  maxPrice)
+    {
+        if (minPrice == null || maxPrice == null) {
+            throw new IllegalArgumentException("Minimum and maximum price are required");
+        }
+
+        if (minPrice.compareTo(BigDecimal.ZERO) < 0 ||
+                maxPrice.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Price cannot be negative");
+        }
+
+        if (minPrice.compareTo(maxPrice) > 0) {
+            throw new IllegalArgumentException("Minimum price cannot be greater than maximum price");
+        }
+
+        if (minPrice.compareTo(new BigDecimal("1000")) < 0) {
+            throw new IllegalArgumentException(
+                    "Minimum price must be at least 1000 rupees"
+            );
+        }
+
+        List<BookingEntity> getAllBookingsByPriceRange =  bookingRepo.findByTotalPriceBetween(minPrice ,maxPrice);
+        return getAllBookingsByPriceRange.stream()
+                .map(this::mapToBookingDto)
+                .toList();
+
+    }
+
     // Get all bookings from the database
     public BookingPageResponseDTO getAllBookings(int page , int size) {
 
         //      sorting bookings by price in descending order
-        Sort sortDesc = Sort.by(Sort.Direction.DESC, "totalPrice");
+        Sort sortDesc = Sort.by("totalPrice").ascending();
 
         //    retrieve bookings 1 page 10 records
         Pageable pageable = PageRequest.of(page,size,sortDesc);
         Page<BookingEntity> bookings = bookingRepo.findAll(pageable);
+
+        //      adding filters
 
 
         // Retrieve all booking records
@@ -311,4 +389,7 @@ public class BookingService {
         bookingResponseDTO.setMessage("your booking successfully completed ");
         return bookingResponseDTO;
     }
+
+
+
 }

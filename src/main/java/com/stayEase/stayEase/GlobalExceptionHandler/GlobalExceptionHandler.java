@@ -12,7 +12,9 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -113,4 +115,39 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body("Invalid request data. Please check your date and time formats.");
     }
+
+//    invalid date format
+   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ValidationErrorResponseDto> handleTypeMismatchException(
+        MethodArgumentTypeMismatchException ex,
+        HttpServletRequest request) {
+
+    Map<String, String> fieldErrors = new HashMap<>();
+
+    String parameterName = ex.getName();
+    String errorMessage;
+
+    if (ex.getRequiredType() == LocalDate.class) {
+        errorMessage = "Invalid date format. Please use yyyy-MM-dd.";
+    } else {
+        errorMessage = "Invalid value '" + ex.getValue()
+                + "' for parameter '" + parameterName + "'.";
+    }
+
+    fieldErrors.put(parameterName, errorMessage);
+
+    ValidationErrorResponseDto errorResponse =
+            new ValidationErrorResponseDto(
+                    LocalDateTime.now(),
+                    HttpStatus.BAD_REQUEST.value(),
+                    HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                    "Invalid request parameter",
+                    request.getRequestURI(),
+                    fieldErrors
+            );
+
+    return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(errorResponse);
+}
 }
