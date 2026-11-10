@@ -1,5 +1,6 @@
 package com.stayEase.stayEase.Hotels.HotelEntity;
 
+import com.stayEase.stayEase.OwnerManagement.OwnerEntity.OwnerEntity;
 import com.stayEase.stayEase.Rooms.RoomEntity.RoomEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -37,5 +38,9 @@ public class HotelEntity {
 
     @OneToMany(mappedBy = "hotel")
     List <RoomEntity> roomEntity = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn (name = "owner_id")
+    OwnerEntity ownerEntity;
 
 }

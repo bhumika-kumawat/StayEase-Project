@@ -22,7 +22,7 @@ public class OwnerController {
 
      //   create owner
     @PostMapping
-    public ResponseEntity<OwnerResponseDto>create(@Valid  @RequestBody OwnerRequestDto ownerRequestDto)
+    public ResponseEntity<OwnerResponseDto>create(@Valid @RequestBody OwnerRequestDto ownerRequestDto)
     {
         OwnerResponseDto createdOwner = ownerService.createOwner(ownerRequestDto);
         return ResponseEntity.ok(createdOwner);

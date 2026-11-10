@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/Hotel")
+@RequestMapping("/api/hotel")
 public class HotelController {
 
     HotelService hotelService;
@@ -43,8 +43,8 @@ public class HotelController {
 //    get all hotel records
 
     @GetMapping
-    public ResponseEntity<List<HotelResponseDto>> getHotelById() {
-        List<HotelResponseDto> getRecord = hotelService.getAllHotel();
+    public ResponseEntity<List<HotelResponseDto>> getAllHotel(@RequestParam Long hotelOwnerID) {
+        List<HotelResponseDto> getRecord = hotelService.getAllHotel(hotelOwnerID);
         return ResponseEntity.ok(getRecord);
 
     }

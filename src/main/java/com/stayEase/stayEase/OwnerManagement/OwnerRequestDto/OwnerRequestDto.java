@@ -2,7 +2,6 @@ package com.stayEase.stayEase.OwnerManagement.OwnerRequestDto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,10 +12,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class OwnerRequestDto {
 
-    @NotNull (message = "Owner name is required")
+    @NotBlank (message = "Owner name is required")
     private String ownerName;
 
-    @NotNull @Email (message = "email is required")
+    @NotBlank
+    @Email (message = "email is required")
     private String email;
 
     @NotBlank(message = "Phone number is required")

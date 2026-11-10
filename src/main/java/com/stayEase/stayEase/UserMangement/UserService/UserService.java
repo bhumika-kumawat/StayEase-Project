@@ -1,10 +1,14 @@
 package com.stayEase.stayEase.UserMangement.UserService;
 
 import com.stayEase.stayEase.CustomExceptions.ResourceNotFoundException;
+import com.stayEase.stayEase.Roles.RoleEntity.RoleEntity;
+import com.stayEase.stayEase.Roles.RoleRepo.RoleRepo;
+import com.stayEase.stayEase.SpringSecurity.SpringSecurityEnums.UserRole;
 import com.stayEase.stayEase.UserMangement.UserEntity.UserEntity;
 import com.stayEase.stayEase.UserMangement.UserRepo.UserRepo;
 import com.stayEase.stayEase.UserMangement.UserRequestDto.UserRequestDto;
 import com.stayEase.stayEase.UserMangement.UserResponseDto.UserResponseDto;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,17 +16,27 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
-    UserRepo userRepo;
+    private final UserRepo userRepo;
+    private final RoleRepo roleRepo;
+    private final PasswordEncoder passwordEncoder;
 
-    UserService(UserRepo userRepo)
-    {
+    public UserService(UserRepo userRepo, PasswordEncoder passwordEncoder, RoleRepo roleRepo) {
         this.userRepo = userRepo;
+        this.passwordEncoder = passwordEncoder;
+        this.roleRepo = roleRepo;
     }
+
 
 //    method to create a new user
     public UserResponseDto createUser(UserRequestDto userRequestDto)
     {
         UserEntity userEntity = mapToUserEntity(userRequestDto);
+
+        RoleEntity customerRole = roleRepo.findByRoleName(UserRole.CUSTOMER)
+                .orElseThrow(() -> new RuntimeException("CUSTOMER role not found"));
+
+        userEntity.getRoles().add(customerRole);
+
         UserEntity  savedUser = userRepo.save(userEntity);
         return mapToUserDto(savedUser);
 
@@ -35,11 +49,18 @@ public class UserService {
                 () ->new ResourceNotFoundException("Invalid User")
         );
 
-        existingUser.setPassword(userRequestDto.getPassword());
         existingUser.setPhoneNo(userRequestDto.getPhoneNo());
         existingUser.setFirstName(userRequestDto.getFirstName());
         existingUser.setLastName(userRequestDto.getLastName());
         existingUser.setEmail(userRequestDto.getEmail());
+
+        if (userRequestDto.getPassword() != null
+                && !userRequestDto.getPassword().isBlank()) {
+
+            existingUser.setPassword(
+                    passwordEncoder.encode(userRequestDto.getPassword())
+            );
+        }
 
         UserEntity savedUser = userRepo.save(existingUser);
         return mapToUserDto(savedUser);
@@ -82,8 +103,11 @@ public UserResponseDto getUserById(Long userId) {
         userEntity.setEmail(userRequestDto.getEmail());
         userEntity.setFirstName(userRequestDto.getFirstName());
         userEntity.setLastName(userRequestDto.getLastName());
-        userEntity.setPassword(userRequestDto.getPassword());
         userEntity.setPhoneNo(userRequestDto.getPhoneNo());
+
+        userEntity.setPassword(
+                passwordEncoder.encode(userRequestDto.getPassword())
+        );
 
         return userEntity;
     }
@@ -97,19 +121,6 @@ public UserResponseDto getUserById(Long userId) {
         userResponseDto.setEmail(userEntity.getEmail());
         userResponseDto.setFirstName(userEntity.getFirstName());
         userResponseDto.setLastName(userEntity.getLastName());
-        userEntity.setPassword(userEntity.getPassword());
-
         return userResponseDto;
-
-
-
-
     }
-
-
-
-
-
-
-
 }

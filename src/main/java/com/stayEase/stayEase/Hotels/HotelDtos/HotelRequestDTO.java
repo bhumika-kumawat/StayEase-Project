@@ -28,7 +28,6 @@ public class HotelRequestDTO {
 
     @Size( max = 1000) @NotBlank
     private String hotelDescription;
-    private int hotelRating;
 
     @NotBlank (message = "Hotel city is required") @Size (max = 150)
     private String hotelCity;
@@ -37,4 +36,6 @@ public class HotelRequestDTO {
     @DecimalMin(value = "0.01")
     @Digits(integer = 8, fraction = 2)
     private BigDecimal hotelPrice;
+
+    private Long ownerID;
 }

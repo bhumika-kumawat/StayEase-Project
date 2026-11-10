@@ -1,5 +1,6 @@
 package com.stayEase.stayEase.OwnerManagement.OwnerService;
 
+import com.stayEase.stayEase.CustomExceptions.DuplicateResourceFoundException;
 import com.stayEase.stayEase.CustomExceptions.ResourceNotFoundException;
 import com.stayEase.stayEase.OwnerManagement.OwnerEntity.OwnerEntity;
 import com.stayEase.stayEase.OwnerManagement.OwnerRepo.OwnerRepo;
@@ -23,6 +24,16 @@ public class OwnerService {
 //create owner
     public OwnerResponseDto createOwner(OwnerRequestDto ownerRequestDto)
     {
+        if(ownerRepo.existsByEmail(ownerRequestDto.getEmail()))
+        {
+            throw new DuplicateResourceFoundException("Owner email already exists: " + ownerRequestDto.getEmail());
+        }
+
+        if(ownerRepo.existsByPhoneNo(ownerRequestDto.getPhoneNo()))
+        {
+            throw new DuplicateResourceFoundException("Owner phone already exists: " + ownerRequestDto.getPhoneNo());
+        }
+
         OwnerEntity ownerEntity = mapToOwnerEntity(ownerRequestDto);
         OwnerEntity savedOwner = ownerRepo.save(ownerEntity);
         return mapToOwnerDto(savedOwner);
@@ -54,6 +65,20 @@ public class OwnerService {
          OwnerEntity existingOwner = ownerRepo.findById(ownerId).orElseThrow(
                  () -> new ResourceNotFoundException("Invalid Owner Id")
          );
+
+        if(ownerRepo.existsByPhoneNoAndIdNot(
+                ownerRequestDto.getPhoneNo(), ownerId))
+        {
+            throw new DuplicateResourceFoundException(
+                    "Phone number already belongs to another owner");
+        }
+
+        if(ownerRepo.existsByEmailAndIdNot(
+                ownerRequestDto.getEmail(), ownerId))
+        {
+            throw new DuplicateResourceFoundException(
+                    "Email already belongs to another owner");
+        }
 
          existingOwner.setPhoneNo(ownerRequestDto.getPhoneNo());
          existingOwner.setOwnerName(ownerRequestDto.getOwnerName());

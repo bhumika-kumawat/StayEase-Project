@@ -9,6 +9,8 @@ import com.stayEase.stayEase.Hotels.HotelDtos.HotelRequestDTO;
 import com.stayEase.stayEase.Hotels.HotelDtos.HotelResponseDto;
 import com.stayEase.stayEase.Hotels.HotelDtos.HotelUpdateReqDto;
 import com.stayEase.stayEase.Hotels.HotelDtos.HotelUpdateResponseDto;
+import com.stayEase.stayEase.OwnerManagement.OwnerEntity.OwnerEntity;
+import com.stayEase.stayEase.OwnerManagement.OwnerRepo.OwnerRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,9 +21,11 @@ import java.util.Optional;
 public class HotelService {
 
     HotelRepo hotelRepo;
+    OwnerRepo ownerRepo;
 
-    HotelService(HotelRepo hotelRepo) {
+    HotelService(HotelRepo hotelRepo , OwnerRepo ownerRepo) {
         this.hotelRepo = hotelRepo;
+        this.ownerRepo = ownerRepo;
     }
 
 //    create
@@ -37,10 +41,24 @@ public class HotelService {
             );
         }
 
-        HotelEntity createdHotel = mapToEntity(hotelRequestDTO);
-        HotelEntity HotelResponse = hotelRepo.save(createdHotel);
+        if(hotelRepo.existsByhotelPhone(hotelRequestDTO.getHotelPhone()))
+        {
+            throw new DuplicateResourceFoundException(
+                    "Hotel with phone no" + hotelRequestDTO.getHotelPhone()
+                    + "already exists"
+            );
+        }
+        OwnerEntity existOwnerId = ownerRepo.findById(hotelRequestDTO.getOwnerID()).orElseThrow(
+                () -> new ResourceNotFoundException("Owner Id is not valid")
+        );
 
-        return mapToDto(HotelResponse);
+        HotelEntity createdHotel = mapToEntity(hotelRequestDTO);
+
+        createdHotel.setOwnerEntity(existOwnerId);
+
+        HotelEntity savedHotel = hotelRepo.save(createdHotel);
+
+        return mapToDto(savedHotel);
     }
 
 //    get hotel by Id
@@ -57,18 +75,18 @@ public class HotelService {
 
     //    get all hotel records
 
-    public List<HotelResponseDto> getAllHotel()
+    public List<HotelResponseDto> getAllHotel(Long hotelOwnerId)
     {
-        List<HotelEntity> existHotel = hotelRepo.findAll();
 
-        List<HotelResponseDto> responseList = new ArrayList<>();
+        OwnerEntity existOwner = ownerRepo.findById(hotelOwnerId).orElseThrow(
+                () -> new ResourceNotFoundException("owner id is not exist")
+        );
 
-        for (HotelEntity hotel : existHotel)
-        {
-            responseList.add(mapToDto(hotel));
-        }
+        List<HotelEntity> existHotel = hotelRepo.findByOwnerEntity_Id(hotelOwnerId);
 
-        return responseList;
+        return existHotel.stream()
+                .map(this::mapToDto)
+                .toList();
     }
 
 //    update
