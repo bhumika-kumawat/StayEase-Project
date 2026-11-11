@@ -27,9 +27,8 @@ public class UserService {
     }
 
 
-//    method to create a new user
-    public UserResponseDto createUser(UserRequestDto userRequestDto)
-    {
+    //    method to create a new user
+    public UserResponseDto createUser(UserRequestDto userRequestDto) {
         UserEntity userEntity = mapToUserEntity(userRequestDto);
 
         RoleEntity customerRole = roleRepo.findByRoleName(UserRole.CUSTOMER)
@@ -37,16 +36,15 @@ public class UserService {
 
         userEntity.getRoles().add(customerRole);
 
-        UserEntity  savedUser = userRepo.save(userEntity);
+        UserEntity savedUser = userRepo.save(userEntity);
         return mapToUserDto(savedUser);
 
     }
 
-//   method to update user details
-    public UserResponseDto updateUser(UserRequestDto userRequestDto , Long userId)
-    {
+    //   method to update user details
+    public UserResponseDto updateUser(UserRequestDto userRequestDto, Long userId) {
         UserEntity existingUser = userRepo.findById(userId).orElseThrow(
-                () ->new ResourceNotFoundException("Invalid User")
+                () -> new ResourceNotFoundException("Invalid User")
         );
 
         existingUser.setPhoneNo(userRequestDto.getPhoneNo());
@@ -66,15 +64,17 @@ public class UserService {
         return mapToUserDto(savedUser);
 
     }
-//    Get user by ID
-public UserResponseDto getUserById(Long userId) {
 
-    UserEntity existingUser = userRepo.findById(userId)
-            .orElseThrow(() ->
-                    new ResourceNotFoundException("User not found"));
+    //    Get user by ID
+    public UserResponseDto getUserById(Long userId) {
 
-    return mapToUserDto(existingUser);
-}
+        UserEntity existingUser = userRepo.findById(userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found"));
+
+        return mapToUserDto(existingUser);
+    }
+
     // Get all users
     public List<UserResponseDto> getAllUsers() {
 
@@ -97,8 +97,7 @@ public UserResponseDto getUserById(Long userId) {
 
 //    method to convert request dto into entity
 
-    public UserEntity mapToUserEntity(UserRequestDto userRequestDto)
-    {
+    public UserEntity mapToUserEntity(UserRequestDto userRequestDto) {
         UserEntity userEntity = new UserEntity();
         userEntity.setEmail(userRequestDto.getEmail());
         userEntity.setFirstName(userRequestDto.getFirstName());
@@ -114,13 +113,13 @@ public UserResponseDto getUserById(Long userId) {
 
 //    method t convert entity into dto
 
-    public UserResponseDto mapToUserDto(UserEntity userEntity)
-    {
-        UserResponseDto userResponseDto =  new UserResponseDto();
+    public UserResponseDto mapToUserDto(UserEntity userEntity) {
+        UserResponseDto userResponseDto = new UserResponseDto();
 
         userResponseDto.setEmail(userEntity.getEmail());
         userResponseDto.setFirstName(userEntity.getFirstName());
         userResponseDto.setLastName(userEntity.getLastName());
+        userResponseDto.setPhoneNo(userEntity.getPhoneNo());
         return userResponseDto;
     }
 }
