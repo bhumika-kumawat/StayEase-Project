@@ -27,7 +27,7 @@ public class JwtService {
         this.expiration = expiration;
     }
 
-//    Method to genrate token
+//    Method to generate token
 
     public String generateToken(String email) {
 
